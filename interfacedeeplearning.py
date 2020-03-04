@@ -31,51 +31,10 @@ class App(tk.Frame):
         tk.Frame.__init__(self,master)
         self.master.title("Segmentation with neuronal networks")
         self.master.resizable(False,False)
-        self.master.tk_setPalette(background='#ececec')
+        self.master.tk_setPalette(background='#000000')
         x=int((self.master.winfo_screenwidth()-self.master.winfo_reqwidth())/1.5)
         y=int((self.master.winfo_screenheight()-self.master.winfo_reqheight())/2)
         self.master.geometry('{}x{}'.format(x,y))
-        
-        ##Create the common frame
-		##For Root_path
-        #self.bfiles=tk.Frame(master, width = mfw, height=mfh*1)
-        #self.fpath=tk.Label(self.bfiles,text=fieldsprep[0][0])
-        #self.fp=tk.StringVar(self.bfiles)
-        #self.fpath_val=tk.Entry(self.bfiles,textvariable=self.fp)
-        #self.browse_button = tk.Button(self.bfiles,text="Browse", fg="green",command=self.browseSt)
-        #
-        #self.fpath.grid(row=0,column=0)
-        #self.fpath_val.grid(row=0,column=1)
-        #self.browse_button.grid(row=0,column=2)       
-        #
-        #self.fext=tk.Label(self.bfiles,text=fieldsprep[1][0])
-        #self.fe=tk.StringVar(self.bfiles,value=fieldsprep[1][1])
-        #self.fext_val=tk.Entry(self.bfiles,textvariable=self.fe)
-        #self.fext.grid(row=2,column=0)
-        #self.fext_val.grid(row=2,column=1)
-        #
-        #
-        #self.bfiles.pack(side="top")
-		#
-		##For Config_path
-        #self.bfiles1=tk.Frame(master, width = mfw, height=mfh*1)
-        ##self.fpath1=tk.Label(self.bfiles1,text=fieldsprep[0][0])
-        #self.fp1=tk.StringVar(self.bfiles1)
-        #self.fpath_val1=tk.Entry(self.bfiles1,textvariable=self.fp1)
-        #self.browse_button1 = tk.Button(self.bfiles1,text="Browse", fg="green",command=self.browseSt1)
-        #
-        ##self.fpath1.grid(row=0,column=0)
-        #self.fpath_val1.grid(row=0,column=1)
-        #self.browse_button1.grid(row=0,column=2)       
-        #
-        ##self.fext1=tk.Label(self.bfiles,text=fieldsprep[1][0])
-        ##self.fe1=tk.StringVar(self.bfiles,value=fieldsprep[1][1])
-        ##self.fext_val1=tk.Entry(self.bfiles,textvariable=self.fe1)
-        ##self.fext1.grid(row=1,column=2)
-        ##self.fext_val1.grid(row=2,column=1)
-        
-        
-        #self.bfiles1.pack(side="top")
 		
         #Create Notebooks
         self.nbfr=tk.Frame(master, width = mfw, height=mfh)
@@ -90,6 +49,7 @@ class App(tk.Frame):
         # Create the main containers to pre-process the data
         tk.Label(self.prep_frame,text="Weka Segmentation").grid(row=0)
         self.cen_frame_prep=tk.Frame(self.prep_frame, width = nbfw, height=nbfh*len(prepfields[1:]), pady=3)
+        self.prmodel_frame=tk.Frame(self.train_frame, width = nbfw, height=nbfh, pady=3)
         self.btm_frame_prep=tk.Frame(self.train_frame, width = nbfw, height=nbfh, pady=3)
         
         # Layout the containers
@@ -97,17 +57,23 @@ class App(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
         
         self.cen_frame_prep.grid(row=1, sticky="ew")
-        self.btm_frame_prep.grid(row=2, sticky="ew")
+        self.prmodel_frame.grid(row=2, sticky="ew")
+        self.cen_frame_prep.grid(row=2, sticky="ew")
 
         self.entsprepr=self.makeFrame(self.cen_frame_prep,fieldsprep)
         
         
         # Widgets of the bottom frame
-        self.quit_button = tk.Button(self.cen_frame_prep, text='Quit', command=self.cancel_b)
-        self.quit_button.grid(row=5,column=4)
+        self.quit_button = tk.Button(self.cen_frame_prep, text='Quit', fg='Red', command=self.cancel_b)
+        self.weka_train_button = tk.Button(self.cen_frame_prep, text='Weka Train', fg='Red', command=partial(self.trainweka))
+
+        self.quit_button.grid(row=5,column=5)
+        self.weka_train_button.grid(row=5,column=4)
 
         root.bind('<Return>', (lambda event: self.fetch(self.entsprepr))) 
 
+		
+		
         # Create the main containers for the FT destriping notebook
         tk.Label(self.train_frame,text="Train Model").grid(row=0)
         self.cen_frame_train=tk.Frame(self.train_frame, width = nbfw, height=nbfh*len(trfields[1:]), pady=3)
@@ -125,18 +91,11 @@ class App(tk.Frame):
         self.entstrain=self.makeFrame(self.cen_frame_train,fieldstrain)
         
         # Widgets of the bottom frame
-        #self.augm_button = tk.Button(self.btm_frame_train,text="Augment", fg='Red')
         self.loaddata_button = tk.Button(self.btm_frame_train,text="TRAIN", fg='Red', command=partial(self.loading_data))
-        #self.train_button = tk.Button(self.btm_frame_train,text="Train", fg="Red", command=partial(self.training,self.entstrain))
-        self.quit_button = tk.Button(self.btm_frame_train, text='Quit', command=self.cancel_b)
-        #self.predict_button = tk.Button(self.btm_frame_train,text="Predict", fg="Red",command=partial(self.predict,self.entstrain))
-        #self.augm_button = tk.Button(self.btm_frame_train,text="Augment", fg="Red")
+        self.quit_button = tk.Button(self.btm_frame_train, text='Quit', fg='Red', command=self.cancel_b)
+        
         self.loaddata_button.grid(row=0,column=3)
-        #self.augm_button.grid(row=0,column=1)
-        #self.train_button.grid(row=0,column=0)
         self.quit_button.grid(row=0,column=2)
-        #self.predict_button.grid(row=0,column=5)
-        #self.augm_button.grid(row=0,column=4)
         
         root.bind('<Tab>', (lambda event: self.fetch(self.entstrain))) 
 
@@ -182,19 +141,24 @@ class App(tk.Frame):
             #entries.append(('Train Model',self.trmodelstr))
             #entries.append(('Train backbone',self.trbbstr))
         for i in range(2,len(fieldz)):
-           lab = tk.Label(parent, width=25, text=fieldz[i][0], anchor='w')
+           #lab = tk.Label(parent, width=25, text=fieldz[i][0], anchor='w')
            ent_txt=tk.StringVar(parent,value=fieldz[i][1])
            ent = tk.Entry(parent,textvariable=ent_txt)
            ent.config(justify=tk.RIGHT)
-           lab.grid(row=i,column=0)
-           ent.grid(row=i,column=1)
+           #lab.grid(row=i,column=0)
+           #ent.grid(row=i,column=1)
            entries.append((fieldz[i][0], ent))
         return entries
 		
 		
+    def trainweka(self):
+        import os
+        os.system("ImageJ-win64.exe --ij2 --headless --console --run New.ijm --run WekaClassifiers.bsh")
+		
+		
     def loading_data(self):
         #Loading Files and Plot examples
-        basepath='data/side/'
+        basepath='data/'
         training_original_dir='training/original/'
         training_ground_truth_dir='training/ground_truth/'
         validation_original_dir='validation/original/'
@@ -334,7 +298,7 @@ class App(tk.Frame):
         #comment='_side' # adds to model_name
         import datetime
         #model_path = f'models/{datetime.date.today().isoformat()}_{blocks}_{channels}_{learning_rate}{comment}.h5'
-        model_path = f'models/model.h5'
+        model_path = f'models/CSBDeep/model.h5'
         if os.path.isfile(model_path):
             print('Your model will be overwritten in the next cell')
         kernel_size=3
@@ -369,19 +333,13 @@ class App(tk.Frame):
             del model
             K.clear_session()
 			
-        model_path = 'models/model.h5'
+        model_path = 'models/CSBDeep/model.h5'
         config = Config(axes, n_channel_in, n_channel_out, unet_kern_size=kernel_size,
         train_learning_rate=learning_rate, unet_n_depth=blocks, unet_n_first=channels)
         model = CARE(config, '.', basedir='models')
         model.keras_model.load_weights(model_path)
         model.export_TF()
-        #for i in to_segment_images_numbers:
-        #    image_path = to_segment_images_paths[i]
-        #    file_name = os.path.basename(image_path)
-        #    #
-        #    topred = io.imread(image_path)[:input_dims[0],:input_dims[1]]
-        #    pred = model.keras_model.predict(topred.reshape(1,topred.shape[0],topred.shape[1],1))
-        #    io.imsave(segmented_dir+file_name, pred[0,:,:,0])
+
 	
 smooth = 1.
 
@@ -397,18 +355,12 @@ def check_gpu():
 if __name__ == '__main__':
     initdir="/Volumes/Data/Luca_Work/MPI/Science/Coding/Python/Segm "
     mainfields=('Root path','Config Path')
-    #mainfields=()
     maindeftexts=('','')
-    #maindeftexts=()
-	#prepfields=('Replica per image','Crop Ratio')
     prepfields=()
-    #prepdeftxt=(3,0.8)
     prepdeftxt=()
-    #trfields=('N epochs','Validation Split','N. of labels','Learning rate','Batch size')
     trfields=()
-    #trdeftxt=(500,0.15,1,0.00001,16)
     trdeftxt=()
-	
+
     fieldsprep=[]
     fieldstrain=[]
 	
@@ -420,27 +372,10 @@ if __name__ == '__main__':
             tmp=(mainfields[i],maindeftexts[i])
             fieldsprep.append(tmp)	
     
-    #if len(mainfields)==len(maindeftexts) and len(trfields)==len(trdeftxt): 
-    #    for i in range(len(mainfields)):
-    #        tmp=(mainfields[i],maindeftexts[i])
-    #        fieldstrain.append(tmp)
-    #    for i in range(len(trfields)):
-    #        tmp=(trfields[i],trdeftxt[i])
-    #        fieldstrain.append(tmp)
-    #    for i in range(len(mainfields)):
-    #        tmp=(mainfields[i],maindeftexts[i])
-    #        fieldstrain.append(tmp)
+
 
     root=tk.Tk()
     app=App(root)
     app.mainloop()
+	
 
-#    create_train_data(data_path,train_p,label_p,fext)
-#    augment_DS(load_train_data(data_path,train_npy,labels_npy)[0],load_train_data(data_path,train_npy,labels_npy)[1],data_path,5)
-#    create_train_data(data_path,train_p,label_p,fext)
-#    create_test_data(data_path,test_p,fext)
-#    train(data_path,train_npy,labels_npy)
-#    predict(data_path,test_npy,test_id_npy)
-
-#    tmp=load_train_data(data_path,train_npy,labels_npy)
-#    tmp2=load_test_data(data_path,test_npy,test_id_npy)
