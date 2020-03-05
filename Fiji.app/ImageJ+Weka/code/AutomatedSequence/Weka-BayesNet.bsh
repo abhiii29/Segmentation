@@ -1,0 +1,69 @@
+import ij.IJ;
+import trainableSegmentation.WekaSegmentation;
+import weka.classifiers.functions.VotedPerceptron;
+
+// imoprt images
+image = IJ.openImage("C:/Users/abga577c/Desktop/ProjectData/Maxim's Data/to_upload/Code/data/side/training/original/0700.tif");
+labels = IJ.openImage("C:/Users/abga577c/Desktop/ProjectData/Maxim's Data/to_upload/Code/data/side/training/original/0700.tif");
+testImage = IJ.openImage("C:/Users/abga577c/Desktop/ProjectData/Maxim's Data/to_upload/Code/data/side/training/original/0700.tif");
+nSamplesToUse = 2;
+
+// starting time
+ startTime = System.currentTimeMillis();
+    
+// create Weka segmentator
+seg = new WekaSegmentation(image);
+ 
+// Classifier
+rf = new VotedPerceptron();
+
+// set classifier  
+seg.setClassifier(rf);    
+// Parameters   
+// membrane patch size  
+seg.setMembranePatchSize(11);  
+// maximum filter radius
+seg.setMaximumSigma(16.0f);
+   
+// Selected attributes (image features)
+enableFeatures = new boolean[]{
+            true,   /* Gaussian_blur */
+            true,   /* Sobel_filter */
+            true,   /* Hessian */
+            true,   /* Difference_of_gaussians */
+            true,   /* Membrane_projections */
+            false,  /* Variance */
+            false,  /* Mean */
+            false,  /* Minimum */
+            false,  /* Maximum */
+            false,  /* Median */
+            false,  /* Anisotropic_diffusion */
+            false,  /* Bilateral */
+            false,  /* Lipschitz */
+            false,  /* Kuwahara */
+            false,  /* Gabor */
+            false,  /* Derivatives */
+            false,  /* Laplacian */
+            false,  /* Structure */
+            false,  /* Entropy */
+            false   /* Neighbors */
+};
+    
+// Enable features in the segmentator
+seg.setEnabledFeatures( enableFeatures );
+    
+// Add labeled samples in a balanced and random way
+seg.addRandomBalancedBinaryData(image, labels, "class 2", "class 1", nSamplesToUse);
+    
+// Train classifier
+seg.trainClassifier();
+ 
+// Apply trained classifier to test image and get probabilities
+prob = seg.applyClassifier( testImage, 0, true );
+// Set output title
+prob.setTitle( "BayesNet Probability maps of " + testImage.getTitle() );
+// Print elapsed time
+estimatedTime = System.currentTimeMillis() - startTime;
+IJ.log( "** Finished script in " + estimatedTime + " ms **" );
+
+IJ.saveAs(prob, "Tiff", "C:/Users/abga577c/Desktop/temmp.tif");

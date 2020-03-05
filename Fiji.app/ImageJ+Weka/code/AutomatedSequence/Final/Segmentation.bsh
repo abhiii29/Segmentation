@@ -1,0 +1,53 @@
+// @File(label="Input directory", description="Select the directory with input images", style="directory") inputDir
+// @File(label="Output directory", description="Select the output directory", style="directory") outputDir
+// @File(label="Weka model", description="Select the Weka model to apply") modelPath
+// @String(label="Result mode",choices={"Labels","Probabilities"}) resultMode
+ 
+ 
+import trainableSegmentation.WekaSegmentation;
+import ij.io.FileSaver;
+import ij.IJ;
+import ij.ImagePlus;
+ 
+// starting time
+startTime = System.currentTimeMillis();
+ 
+// caculate probabilities?
+getProbs = true;
+ 
+// get list of input images
+listOfFiles = inputDir.listFiles();
+for ( i = 0; i < listOfFiles.length; i++ )
+{
+    // process only files (do not go into sub-folders)
+    if (listOfFiles[ i ].isFile())
+    {
+        // try to read file as image
+        image = new ImagePlus( listOfFiles[i].getCanonicalPath() );
+        if( image != null )
+        {      
+
+			//create weka segmentator
+			seg = new WekaSegmentation(image);
+
+    	seg.loadClassifier("C:/Users/abga577c/Desktop/Debo/set45.model");
+            
+        // apply classifier and get results
+        seg.applyClassifier( getProbs );
+        result = seg.getClassifiedImage();
+        
+       	// save result as TIFF in output folder
+        outputFileName = listOfFiles[ i ].getName().replaceFirst("[.][^.]+$", "") + ".tif";
+        new FileSaver( result ).saveAsTiff( outputDir.getPath() + File.separator + outputFileName );
+ 
+        // force garbage collection (important for large images)
+         segmentator = null;
+         result = null; 
+         image = null;
+         System.gc();
+        }
+    }
+}
+// print elapsed time
+estimatedTime = System.currentTimeMillis() - startTime;
+IJ.log( "** Finished processing folder in " + estimatedTime + " ms **" );

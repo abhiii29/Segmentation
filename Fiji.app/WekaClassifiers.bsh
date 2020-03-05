@@ -1,0 +1,110 @@
+import ij.IJ;
+import trainableSegmentation.WekaSegmentation;
+import hr.irb.fastRandomForest.FastRandomForest;
+import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.functions.SMO;
+import weka.classifiers.functions.VotedPerceptron;
+
+// import images
+image = IJ.openImage("C:/Users/maxim/Desktop/segmentation/data/training/original/0700.tif");
+labels = IJ.openImage("C:/Users/maxim/Desktop/segmentation/data/training/ground_truth/0700.tif");
+nSamplesToUse = 2;
+ 
+// starting time
+ startTime = System.currentTimeMillis();
+    
+// create Weka segmentator
+seg = new WekaSegmentation(image);
+seg1 = new WekaSegmentation(image);
+seg2 = new WekaSegmentation(image);
+seg3 = new WekaSegmentation(image);
+ 
+// Classifier
+// In this case we use a Fast Random Forest
+rf = new FastRandomForest();
+rf1 = new NaiveBayes();
+rf2 = new SMO();
+rf3 = new VotedPerceptron();
+
+// Number of trees in the forest
+rf.setNumTrees(100);
+          
+// Number of features per tree
+rf.setNumFeatures(0);  
+// Seed  
+rf.setSeed( (new java.util.Random()).nextInt() );    
+// set classifier  
+seg.setClassifier(rf); 
+seg1.setClassifier(rf1); 
+seg2.setClassifier(rf2); 
+seg3.setClassifier(rf3); 
+
+// Parameters   
+// membrane patch size  
+seg.setMembranePatchSize(11); 
+seg1.setMembranePatchSize(11);
+seg2.setMembranePatchSize(11);
+seg3.setMembranePatchSize(11);
+  
+// maximum filter radius
+seg.setMaximumSigma(16.0f);
+seg1.setMaximumSigma(16.0f);
+seg2.setMaximumSigma(16.0f);
+seg3.setMaximumSigma(16.0f);
+   
+// Selected attributes (image features)
+enableFeatures = new boolean[]{
+            true,   /* Gaussian_blur */
+            true,   /* Sobel_filter */
+            true,   /* Hessian */
+            true,   /* Difference_of_gaussians */
+            true,   /* Membrane_projections */
+            false,  /* Variance */
+            false,  /* Mean */
+            false,  /* Minimum */
+            false,  /* Maximum */
+            false,  /* Median */
+            false,  /* Anisotropic_diffusion */
+            false,  /* Bilateral */
+            false,  /* Lipschitz */
+            false,  /* Kuwahara */
+            false,  /* Gabor */
+            false,  /* Derivatives */
+            false,  /* Laplacian */
+            false,  /* Structure */
+            false,  /* Entropy */
+            false   /* Neighbors */
+};
+    
+// Enable features in the segmentator
+seg.setEnabledFeatures( enableFeatures );
+seg1.setEnabledFeatures( enableFeatures );
+seg2.setEnabledFeatures( enableFeatures );
+seg3.setEnabledFeatures( enableFeatures );
+    
+// Add labeled samples in a balanced and random way
+seg.addRandomBalancedBinaryData(image, labels, "class 2", "class 1", nSamplesToUse);
+seg1.addRandomBalancedBinaryData(image, labels, "class 2", "class 1", nSamplesToUse);
+seg2.addRandomBalancedBinaryData(image, labels, "class 2", "class 1", nSamplesToUse);
+seg3.addRandomBalancedBinaryData(image, labels, "class 2", "class 1", nSamplesToUse);
+    
+// Train classifier
+seg.trainClassifier();
+seg1.trainClassifier();
+seg2.trainClassifier();
+seg3.trainClassifier();
+
+seg.saveClassifier("C:/Users/maxim/Desktop/segmentation/models/Weka/randomforest.model");
+seg1.saveClassifier("C:/Users/maxim/Desktop/segmentation/models/Weka/NaiveBayes.model");
+seg2.saveClassifier("C:/Users/maxim/Desktop/segmentation/models/Weka/SMO.model");
+seg3.saveClassifier("C:/Users/maxim/Desktop/segmentation/models/Weka/VotedPerceptron.model");
+
+// Apply trained classifier to test image and get probabilities
+//prob = seg.applyClassifier( testImage, 0, true );
+// Set output title
+//prob.setTitle( "BayesNet Probability maps of " + testImage.getTitle() );
+// Print elapsed time
+estimatedTime = System.currentTimeMillis() - startTime;
+IJ.log( "** Finished script in " + estimatedTime + " ms **" );
+
+//IJ.saveAs(prob, "Tiff", "C:/Users/abga577c/Desktop/temmp.tif");
