@@ -92,10 +92,12 @@ class App(tk.Frame):
         
         # Widgets of the bottom frame
         self.loaddata_button = tk.Button(self.btm_frame_train,text="TRAIN", fg='Red', command=partial(self.loading_data))
+        self.testmodel_button = tk.Button(self.btm_frame_train,text="TEST", fg='Red', command=partial(self.modeltest))
         self.quit_button = tk.Button(self.btm_frame_train, text='Quit', fg='Red', command=self.cancel_b)
         
         self.loaddata_button.grid(row=0,column=3)
-        self.quit_button.grid(row=0,column=2)
+        self.testmodel_button.grid(row=0,column=4)
+        self.quit_button.grid(row=0,column=5)
         
         root.bind('<Tab>', (lambda event: self.fetch(self.entstrain))) 
 
@@ -153,7 +155,12 @@ class App(tk.Frame):
 		
     def trainweka(self):
         import os
-        os.system("ImageJ-win64.exe --ij2 --headless --console --run New.ijm --run WekaClassifiers.bsh")
+        os.system("ImageJ-win64.exe --ij2 --headless --console --run WekaClassifiers.bsh")
+        
+        
+    def modeltest(self):
+        import os
+        os.system("ImageJ-win64.exe  --run modeltest.ijm")
 		
 		
     def loading_data(self):

@@ -1,10 +1,10 @@
-run("Image Sequence...", "open=C:/Users/maxim/Desktop/segmentation/data/testdata/ground_truth/1200.tif sort");
+run("Image Sequence...", "open=C:/Users/abga577c/Desktop/GitHub/Segmentation/Fiji.app/data/testdata/ground_truth/1200.tif sort");
 name_label=getImageID();
 rename("label");
 selectImage(name_label);
 
 
-run("Image Sequence...", "open=C:/Users/maxim/Desktop/segmentation/data/testdata/original/1200.tif sort");
+run("Image Sequence...", "open=C:/Users/abga577c/Desktop/GitHub/Segmentation/Fiji.app/data/testdata/original/1200.tif sort");
 name_original=getImageID();
 selectImage(name_original);
 
@@ -24,7 +24,7 @@ run("Convert to Mask", "method=Default background=Dark calculate black");
 run("32-bit");
 run("Enhance Contrast...", "saturated=0.3 normalize process_all");
 selectImage(name_prediction);
-run("Image Sequence... ", "format=TIFF name=[] use save=C:/Users/maxim/Desktop/segmentation/data/testdata/prediction/0000.tif");
+//run("Image Sequence... ", "format=TIFF name=[] use save=C:/Users/maxim/Desktop/segmentation/data/testdata/prediction/0000.tif");
 
 
 
