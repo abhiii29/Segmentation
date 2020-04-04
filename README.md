@@ -1,2 +1,2 @@
 # Segmentation
-Interface for segmentation with Auto Weka and Deep Learning
+Interface for segmentation with Weka and Deep Learning
