@@ -6,8 +6,10 @@ import weka.classifiers.functions.SMO;
 import weka.classifiers.functions.VotedPerceptron;
 
 // import images
-image = IJ.openImage("C:/Users/abga577c/Desktop/GitHub/Segmentation/Fiji.app/data/testdata/original/1200.tif");
-labels = IJ.openImage("C:/Users/abga577c/Desktop/GitHub/Segmentation/Fiji.app/data/testdata/ground_truth/1200.tif");
+IJ.run("Image Sequence...", "open=C:/Users/Lenovo/Desktop/GitHub/Segmentation/Fiji.app/data/training/original/0100.tif");
+image = IJ.getImage();
+IJ.run("Image Sequence...", "open=C:/Users/Lenovo/Desktop/GitHub/Segmentation/Fiji.app/data/training/ground_truth/0100.tif");
+labels = IJ.getImage();
 nSamplesToUse = 2;
 
 // starting time
@@ -84,8 +86,8 @@ seg.trainClassifier();
 seg1.trainClassifier();
 
 
-seg.saveClassifier("C:/Users/abga577c/Desktop/GitHub/Segmentation/Fiji.app/models/WekaModels/FastRandomForest.model");
-seg1.saveClassifier("C:/Users/abga577c/Desktop/GitHub/Segmentation/Fiji.app/models/WekaModels/naive.model");
+seg.saveClassifier("C:/Users/Lenovo/Desktop/GitHub/Segmentation/Fiji.app/models/WekaModels/FastRandomForest.model");
+seg1.saveClassifier("C:/Users/Lenovo/Desktop/GitHub/Segmentation/Fiji.app/models/WekaModels/naive.model");
 
 
 // Apply trained classifier to test image and get probabilities

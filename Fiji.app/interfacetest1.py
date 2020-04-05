@@ -91,7 +91,7 @@ class App(tk.Frame):
         self.entstrain=self.makeFrame(self.cen_frame_train,fieldstrain)
         
         # Widgets of the bottom frame
-        self.loaddata_button = tk.Button(self.btm_frame_train,text="TRAIN", fg='Red', command=partial(self.loading_data))
+        self.loaddata_button = tk.Button(self.btm_frame_train,text="TRAIN", fg='Red', command=partial(self.training))
         self.testmodel_button = tk.Button(self.btm_frame_train,text="TEST", fg='Red', command=partial(self.modeltest))
         self.quit_button = tk.Button(self.btm_frame_train, text='Quit', fg='Red', command=self.cancel_b)
         
@@ -155,15 +155,17 @@ class App(tk.Frame):
 		
     def trainweka(self):
         import os
+        #change directory path in macro script
         os.system("ImageJ-win64.exe --ij2 --headless --console --run WekaClassifiers.bsh")
         
         
     def modeltest(self):
+        #change directory path in macro script
         import os
         os.system("ImageJ-win64.exe  --run modeltest.ijm")
 		
 		
-    def loading_data(self):
+    def training(self):
         #Loading Files and Plot examples
         basepath='data/'
         training_original_dir='training/original/'
@@ -304,7 +306,7 @@ class App(tk.Frame):
         epochs=10
         #comment='_side' # adds to model_name
         import datetime
-        #model_path = f'models/{datetime.date.today().isoformat()}_{blocks}_{channels}_{learning_rate}{comment}.h5'
+        #model path
         model_path = f'models/CSBDeep/model.h5'
         if os.path.isfile(model_path):
             print('Your model will be overwritten in the next cell')
@@ -339,7 +341,8 @@ class App(tk.Frame):
                 print(f'Validation MAE:{best_mae:.3E}')
             del model
             K.clear_session()
-			
+		
+        #model path
         model_path = 'models/CSBDeep/model.h5'
         config = Config(axes, n_channel_in, n_channel_out, unet_kern_size=kernel_size,
         train_learning_rate=learning_rate, unet_n_depth=blocks, unet_n_first=channels)
